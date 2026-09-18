@@ -44,3 +44,9 @@ Hardware projects should continue to include, as applicable:
 - `LICENSE-SOFTWARE`
 
 The default philosophy is **maker friendly first, cost second**.
+
+## Qualification fixture
+
+`test/fixture/fixture.kicad_pcb` is a synthetic KiCad board used only to exercise the reusable manufacturing workflow. It is not a production design and must never be published as order-ready hardware.
+
+Until the self-test caller is enabled, the fixture is infrastructure preparation only and does not constitute a CI PASS.
