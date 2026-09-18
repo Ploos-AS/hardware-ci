@@ -12,13 +12,21 @@ Central reusable GitHub Actions workflows for Ploos-AS open-hardware projects.
 
 ## Reusable workflow
 
-Projects call:
+Hardware projects should pin the stable major tag:
 
 ```yaml
-uses: Ploos-AS/hardware-ci/.github/workflows/manufacturing.yml@main
+uses: Ploos-AS/hardware-ci/.github/workflows/manufacturing.yml@v1
 ```
 
 The reusable workflow locates a single KiCad PCB by default. Projects with multiple boards should supply `board_path` explicitly.
+
+Do not point production hardware projects at `@main`. Development happens on `main`; a tested backward-compatible release may later move the `v1` major tag forward. Immutable release tags such as `v1.0.0` may also be used when an exact CI implementation must be frozen.
+
+## Self-test
+
+`.github/workflows/self-test.yml` runs on changes to `main`, pull requests, and manual dispatch. It validates the public reusable-workflow contract and versioning documentation before a new revision should be considered for the stable major tag.
+
+Moving the `v1` major tag is a deliberate release operation and must only happen after the candidate on `main` has passed its CI and compatibility review.
 
 ## Policy
 
