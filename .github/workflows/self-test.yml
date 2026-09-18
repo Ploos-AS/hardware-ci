@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
     paths:
       - ".github/workflows/manufacturing.yml"
       - ".github/workflows/self-test.yml"
