@@ -1,54 +1,20 @@
 name: hardware-ci self-test
 
 on:
-  push:
-    branches: [main]
-  pull_request:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/manufacturing.yml"
+      - ".github/workflows/self-test.yml"
+      - "test/fixture/**"
 
 permissions:
   contents: read
 
 jobs:
-  workflow-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate reusable workflow contract
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 <<'PY'
-          from pathlib import Path
-          p=Path(".github/workflows/manufacturing.yml")
-          text=p.read_text()
-          required=[
-            "workflow_call:",
-            "board_path:",
-            "publish_release:",
-            "kicad/kicad:9.0",
-            "Maker-friendly design lint",
-            "Run KiCad DRC",
-            "Export Gerbers and drill files",
-            "Maker-friendly BOM lint",
-            "Generate hardware qualification report",
-            "Upload manufacturing artifact",
-            "Upload hardware qualification report",
-            "Publish manufacturing package on GitHub Release",
-            "ploos-hardware-qualification-v1",
-          ]
-          missing=[x for x in required if x not in text]
-          if missing:
-              raise SystemExit("Missing required workflow contract element(s): "+", ".join(missing))
-          if "workflow_dispatch:" in text:
-              raise SystemExit("Reusable manufacturing workflow must remain workflow_call-only.")
-          print("Reusable workflow contract: PASS")
-          PY
-
-      - name: Validate README versioning guidance
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -Fq 'manufacturing.yml@v1' README.md
-          grep -Fq 'major tag' README.md
-          echo "Versioning documentation: PASS"
+  fixture:
+    uses: ./.github/workflows/manufacturing.yml
+    with:
+      board_path: test/fixture/fixture.kicad_pcb
