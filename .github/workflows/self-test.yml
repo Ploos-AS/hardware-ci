@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   fixture:
-    uses: ./.github/workflows/manufacturing.yml
+    uses: Ploos-AS/hardware-ci/.github/workflows/manufacturing.yml@main
     with:
       board_path: test/fixture/fixture.kicad_pcb
       publish_release: false
