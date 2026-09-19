@@ -106,8 +106,8 @@ jobs:
           set -euo pipefail
           out=build/manufacturing/gerbers
           mkdir -p "$out"
-          kicad-cli pcb gerbers --output "$out/" "${{ steps.pcb.outputs.path }}"
-          kicad-cli pcb drill --output "$out/" "${{ steps.pcb.outputs.path }}"
+          kicad-cli pcb export gerbers --output "$out/" "${{ steps.pcb.outputs.path }}"
+          kicad-cli pcb export drill --output "$out/" "${{ steps.pcb.outputs.path }}"
 
       - name: Export BOM and placement data
         shell: bash
@@ -120,7 +120,7 @@ jobs:
           else
             echo "::warning::Matching KiCad schematic not found; BOM not generated."
           fi
-          kicad-cli pcb pos --format csv --units mm --output build/manufacturing/CPL.csv "${{ steps.pcb.outputs.path }}"
+          kicad-cli pcb export pos --format csv --units mm --output build/manufacturing/CPL.csv "${{ steps.pcb.outputs.path }}"
 
       - name: Maker-friendly BOM lint
         shell: bash
