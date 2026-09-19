@@ -168,10 +168,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cp MANUFACTURING.md build/manufacturing/
-          cp LICENSE-HARDWARE build/manufacturing/
-          for f in README.md MAKER-FRIENDLY.md COMPONENT-POLICY.md MANUFACTURER-PROFILES.md ORDERING.md HARDWARE-RELEASE-CHECKLIST.md; do
-            [ ! -f "$f" ] || cp "$f" build/manufacturing/
+          board_dir="${{ steps.pcb.outputs.dir }}"
+          copy_doc() {
+            name="$1"
+            if [ -f "$name" ]; then
+              cp "$name" build/manufacturing/
+            elif [ -f "$board_dir/$name" ]; then
+              cp "$board_dir/$name" build/manufacturing/
+            else
+              return 1
+            fi
+          }
+          copy_doc MANUFACTURING.md
+          copy_doc LICENSE-HARDWARE
+          for name in README.md MAKER-FRIENDLY.md COMPONENT-POLICY.md MANUFACTURER-PROFILES.md ORDERING.md HARDWARE-RELEASE-CHECKLIST.md LICENSE-SOFTWARE; do
+            copy_doc "$name" || true
           done
 
       - name: Create checksums and archive
