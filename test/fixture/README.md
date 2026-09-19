@@ -11,3 +11,5 @@ Qualification retry after board-local policy lookup fix.
 Qualification retry after forcing Bash for Gerber export.
 
 Qualification retry after KiCad 9 export CLI migration.
+
+Qualification retry after board-local manufacturing documentation packaging fix.
