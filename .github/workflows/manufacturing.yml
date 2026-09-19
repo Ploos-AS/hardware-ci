@@ -101,6 +101,7 @@ jobs:
           kicad-cli pcb drc --exit-code-violations --output build/manufacturing/reports/drc.rpt "${{ steps.pcb.outputs.path }}"
 
       - name: Export Gerbers and drill files
+        shell: bash
         run: |
           set -euo pipefail
           out=build/manufacturing/gerbers
