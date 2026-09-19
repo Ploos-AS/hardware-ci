@@ -7,3 +7,5 @@ Qualification trigger: exercise the reusable workflow through a pull request.
 Qualification retry after fixing container package-install permissions.
 
 Qualification retry after board-local policy lookup fix.
+
+Qualification retry after forcing Bash for Gerber export.
