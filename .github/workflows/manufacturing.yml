@@ -191,6 +191,7 @@ jobs:
           set -euo pipefail
           project="${GITHUB_REPOSITORY#*/}"
           version="${GITHUB_REF_NAME:-manual}"
+          version="${version//\//-}"
           package="${project}-${version}-manufacturing"
           (
             cd build/manufacturing
