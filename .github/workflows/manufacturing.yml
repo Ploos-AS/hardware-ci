@@ -88,8 +88,8 @@ jobs:
               vals = [float(x) for x in re.findall(rf'\({key}\s+([0-9.]+)\)', text)]
               if vals and min(vals) < preferred:
                   warnings.append(f"{label} {min(vals):.3f} mm is below maker-friendly preference {preferred:.2f} mm.")
-          if not Path("MAKER-FRIENDLY.md").is_file():
-              problems.append("MAKER-FRIENDLY.md is missing.")
+          if not (Path("MAKER-FRIENDLY.md").is_file() or (pcb.parent/"MAKER-FRIENDLY.md").is_file()):
+              problems.append("MAKER-FRIENDLY.md is missing from repository root and board directory.")
           for msg in warnings: print(f"::warning::{msg}")
           for msg in problems: print(f"::error::{msg}")
           if problems: raise SystemExit(1)
