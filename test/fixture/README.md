@@ -13,3 +13,5 @@ Qualification retry after forcing Bash for Gerber export.
 Qualification retry after KiCad 9 export CLI migration.
 
 Qualification retry after board-local manufacturing documentation packaging fix.
+
+Qualification retry after sanitizing slash-containing PR ref names in archive names.
