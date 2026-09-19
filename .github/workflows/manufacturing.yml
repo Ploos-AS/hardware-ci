@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: kicad/kicad:9.0
+      options: --user 0
     steps:
       - name: Install packaging tools
         run: apt-get update && apt-get install -y --no-install-recommends git zip findutils coreutils python3 gh && rm -rf /var/lib/apt/lists/*
