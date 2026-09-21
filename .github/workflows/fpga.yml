@@ -1,0 +1,114 @@
+name: Reusable FPGA qualification
+
+on:
+  workflow_call:
+    inputs:
+      board:
+        description: Supported FPGA board profile
+        required: true
+        type: string
+      working_directory:
+        description: Directory containing the project FPGA build
+        required: false
+        type: string
+        default: fpga/rtl
+      build_target:
+        description: Make target used to build the canonical bitstream
+        required: true
+        type: string
+      bitstream_path:
+        description: Path to the generated bitstream, relative to repository root
+        required: true
+        type: string
+      test_target:
+        description: Optional make target for RTL simulation/tests
+        required: false
+        type: string
+        default: ""
+      conformance_command:
+        description: Optional repository-root command for architectural conformance
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  fpga:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate board profile
+        shell: bash
+        env:
+          BOARD: ${{ inputs.board }}
+        run: |
+          set -euo pipefail
+          case "$BOARD" in
+            upduino-v3.1) ;;
+            *) echo "::error::Unsupported FPGA board profile: $BOARD"; exit 1 ;;
+          esac
+
+      - name: Install UPduino v3.1 toolchain
+        if: ${{ inputs.board == 'upduino-v3.1' }}
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends make iverilog yosys nextpnr-ice40 fpga-icestorm
+
+      - name: Run RTL test target
+        if: ${{ inputs.test_target != '' }}
+        working-directory: ${{ inputs.working_directory }}
+        run: make "${{ inputs.test_target }}"
+
+      - name: Build canonical FPGA bitstream
+        working-directory: ${{ inputs.working_directory }}
+        run: make "${{ inputs.build_target }}"
+
+      - name: Verify bitstream
+        shell: bash
+        env:
+          BITSTREAM: ${{ inputs.bitstream_path }}
+        run: |
+          set -euo pipefail
+          test -s "$BITSTREAM" || { echo "::error::Bitstream missing or empty: $BITSTREAM"; exit 1; }
+          sha256sum "$BITSTREAM" | tee fpga-bitstream.sha256
+
+      - name: Run architectural conformance
+        if: ${{ inputs.conformance_command != '' }}
+        shell: bash
+        env:
+          CONFORMANCE_COMMAND: ${{ inputs.conformance_command }}
+        run: bash -euo pipefail -c "$CONFORMANCE_COMMAND"
+
+      - name: Write FPGA qualification report
+        shell: bash
+        env:
+          BOARD: ${{ inputs.board }}
+          BITSTREAM: ${{ inputs.bitstream_path }}
+        run: |
+          mkdir -p build/fpga-qualification
+          {
+            echo "# FPGA Qualification Report"
+            echo
+            echo "- Repository: \`$GITHUB_REPOSITORY\`"
+            echo "- Revision: \`$GITHUB_SHA\`"
+            echo "- Board: **$BOARD**"
+            echo "- Bitstream: \`$BITSTREAM\`"
+            echo "- Build qualification: **PASS**"
+            echo "- Physical board qualification: **PENDING**"
+          } > build/fpga-qualification/fpga-qualification.md
+          cp fpga-bitstream.sha256 build/fpga-qualification/
+
+      - name: Upload bitstream
+        uses: actions/upload-artifact@v4
+        with:
+          name: fpga-${{ inputs.board }}-bitstream
+          path: ${{ inputs.bitstream_path }}
+          if-no-files-found: error
+
+      - name: Upload FPGA qualification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: fpga-qualification
+          path: build/fpga-qualification/
+          if-no-files-found: error
