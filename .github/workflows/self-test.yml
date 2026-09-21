@@ -11,6 +11,8 @@ on:
       - ".github/workflows/self-test.yml"
       - "test/fixture/**"
       - "test/fpga/**"
+      - "test/fpga-ecp5/**"
+      - "test/fpga-ecp5/**"
   pull_request:
     branches:
       - main
@@ -39,3 +41,12 @@ jobs:
       test_target: test
       build_target: build
       bitstream_path: test/fpga/fixture.bin
+
+  ecp5-fixture:
+    uses: Ploos-AS/hardware-ci/.github/workflows/fpga.yml@feature/fpga-ecp5
+    with:
+      board: retrosbc-ecp5um-85f
+      working_directory: test/fpga-ecp5
+      test_target: test
+      build_target: build
+      bitstream_path: test/fpga-ecp5/fixture.bit
