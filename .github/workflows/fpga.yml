@@ -47,13 +47,17 @@ jobs:
         run: |
           set -euo pipefail
           case "$BOARD" in
-            upduino-v3.1) ;;
+            upduino-v3.1|retrosbc-ecp5um-85f) ;;
             *) echo "::error::Unsupported FPGA board profile: $BOARD"; exit 1 ;;
           esac
 
       - name: Install UPduino v3.1 toolchain
         if: ${{ inputs.board == 'upduino-v3.1' }}
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends make iverilog yosys nextpnr-ice40 fpga-icestorm
+
+      - name: Install RetroSBC ECP5 toolchain
+        if: ${{ inputs.board == 'retrosbc-ecp5um-85f' }}
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends make iverilog yosys nextpnr-ecp5 fpga-trellis
 
       - name: Run RTL test target
         if: ${{ inputs.test_target != '' }}
