@@ -12,7 +12,6 @@ on:
       - "test/fixture/**"
       - "test/fpga/**"
       - "test/fpga-ecp5/**"
-      - "test/fpga-ecp5/**"
   pull_request:
     branches:
       - main
@@ -22,6 +21,7 @@ on:
       - ".github/workflows/self-test.yml"
       - "test/fixture/**"
       - "test/fpga/**"
+      - "test/fpga-ecp5/**"
 
 permissions:
   contents: write
@@ -34,7 +34,7 @@ jobs:
       publish_release: false
 
   fpga-fixture:
-    uses: Ploos-AS/hardware-ci/.github/workflows/fpga.yml@test/fpga-self-test
+    uses: ./.github/workflows/fpga.yml
     with:
       board: upduino-v3.1
       working_directory: test/fpga
@@ -43,7 +43,7 @@ jobs:
       bitstream_path: test/fpga/fixture.bin
 
   ecp5-fixture:
-    uses: Ploos-AS/hardware-ci/.github/workflows/fpga.yml@feature/fpga-ecp5
+    uses: ./.github/workflows/fpga.yml
     with:
       board: ecp5
       working_directory: test/fpga-ecp5
