@@ -7,15 +7,19 @@ on:
       - main
     paths:
       - ".github/workflows/manufacturing.yml"
+      - ".github/workflows/fpga.yml"
       - ".github/workflows/self-test.yml"
       - "test/fixture/**"
+      - "test/fpga/**"
   pull_request:
     branches:
       - main
     paths:
       - ".github/workflows/manufacturing.yml"
+      - ".github/workflows/fpga.yml"
       - ".github/workflows/self-test.yml"
       - "test/fixture/**"
+      - "test/fpga/**"
 
 permissions:
   contents: write
@@ -26,3 +30,12 @@ jobs:
     with:
       board_path: test/fixture/fixture.kicad_pcb
       publish_release: false
+
+  fpga-fixture:
+    uses: Ploos-AS/hardware-ci/.github/workflows/fpga.yml@test/fpga-self-test
+    with:
+      board: upduino-v3.1
+      working_directory: test/fpga
+      test_target: test
+      build_target: build
+      bitstream_path: test/fpga/fixture.bin
