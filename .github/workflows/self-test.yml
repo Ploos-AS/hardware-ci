@@ -45,7 +45,7 @@ jobs:
   ecp5-fixture:
     uses: Ploos-AS/hardware-ci/.github/workflows/fpga.yml@feature/fpga-ecp5
     with:
-      board: retrosbc-ecp5um-85f
+      board: ecp5
       working_directory: test/fpga-ecp5
       test_target: test
       build_target: build
