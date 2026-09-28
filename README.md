@@ -35,7 +35,11 @@ with:
   top: top
 ```
 
-The workflow provides Icarus Verilog for simulation, Yosys parse/synthesis checking, optional architectural conformance, and a qualification report. FPGA bitstream builds remain the responsibility of `fpga.yml`.
+The workflow provides Icarus Verilog for simulation, Yosys parse/synthesis checking, optional architectural conformance, and a qualification report that records the HDL tool versions used. FPGA bitstream builds remain the responsibility of `fpga.yml`.
+
+### HDL qualification contract
+
+A successful HDL qualification means that every requested simulation command completed successfully, Yosys accepted the declared Verilog sources and top module through `hierarchy -check`, `proc`, `opt` and `check`, and any requested architectural conformance command completed successfully. It does **not** by itself claim timing closure, FPGA bitstream validity or physical-board qualification.
 
 ## Self-test
 
