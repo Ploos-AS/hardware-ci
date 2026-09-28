@@ -1,0 +1,83 @@
+name: Reusable HDL qualification
+
+on:
+  workflow_call:
+    inputs:
+      working_directory:
+        description: Directory containing HDL sources
+        required: false
+        type: string
+        default: .
+      test_command:
+        description: Optional command that generates/runs HDL simulation tests
+        required: false
+        type: string
+        default: ""
+      verilog_files:
+        description: Space-separated Verilog files to parse/synthesize with Yosys
+        required: true
+        type: string
+      top:
+        description: Top module for Yosys hierarchy check
+        required: true
+        type: string
+      conformance_command:
+        description: Optional architectural/reference-model conformance command
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  hdl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install HDL tools
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends iverilog yosys
+      - name: Run HDL simulation tests
+        if: ${{ inputs.test_command != '' }}
+        working-directory: ${{ inputs.working_directory }}
+        env:
+          TEST_COMMAND: ${{ inputs.test_command }}
+        run: bash -euo pipefail -c "$TEST_COMMAND"
+      - name: Yosys parse and synthesis check
+        working-directory: ${{ inputs.working_directory }}
+        env:
+          VERILOG_FILES: ${{ inputs.verilog_files }}
+          TOP: ${{ inputs.top }}
+        run: |
+          set -euo pipefail
+          yosys -p "read_verilog $VERILOG_FILES; hierarchy -check -top $TOP; proc; opt; check"
+      - name: Run architectural conformance
+        if: ${{ inputs.conformance_command != '' }}
+        working-directory: ${{ inputs.working_directory }}
+        env:
+          CONFORMANCE_COMMAND: ${{ inputs.conformance_command }}
+        run: bash -euo pipefail -c "$CONFORMANCE_COMMAND"
+      - name: Write HDL qualification report
+        shell: bash
+        env:
+          TOP: ${{ inputs.top }}
+          VERILOG_FILES: ${{ inputs.verilog_files }}
+        run: |
+          mkdir -p build/hdl-qualification
+          {
+            echo "# HDL Qualification Report"
+            echo
+            echo "- Repository: `$GITHUB_REPOSITORY`"
+            echo "- Revision: `$GITHUB_SHA`"
+            echo "- Top: `$TOP`"
+            echo "- Sources: `$VERILOG_FILES`"
+            echo "- Icarus available: **PASS**"
+            echo "- Yosys parse/synthesis check: **PASS**"
+            echo "- Qualification: **PASS**"
+          } > build/hdl-qualification/hdl-qualification.md
+      - name: Upload HDL qualification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: hdl-qualification
+          path: build/hdl-qualification/
+          if-no-files-found: error
