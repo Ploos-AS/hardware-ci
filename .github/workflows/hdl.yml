@@ -37,6 +37,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install HDL tools
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends iverilog yosys
+      - name: Report HDL tool versions
+        run: |
+          iverilog -V
+          yosys -V
       - name: Run HDL simulation tests
         if: ${{ inputs.test_command != '' }}
         working-directory: ${{ inputs.working_directory }}
@@ -64,6 +68,8 @@ jobs:
           VERILOG_FILES: ${{ inputs.verilog_files }}
         run: |
           mkdir -p build/hdl-qualification
+          IVERILOG_VERSION="$(iverilog -V 2>&1 | head -n 1)"
+          YOSYS_VERSION="$(yosys -V 2>&1 | head -n 1)"
           {
             echo "# HDL Qualification Report"
             echo
@@ -71,7 +77,8 @@ jobs:
             echo "- Revision: `$GITHUB_SHA`"
             echo "- Top: `$TOP`"
             echo "- Sources: `$VERILOG_FILES`"
-            echo "- Icarus available: **PASS**"
+            echo "- Icarus: `$IVERILOG_VERSION`"
+            echo "- Yosys: `$YOSYS_VERSION`"
             echo "- Yosys parse/synthesis check: **PASS**"
             echo "- Qualification: **PASS**"
           } > build/hdl-qualification/hdl-qualification.md
