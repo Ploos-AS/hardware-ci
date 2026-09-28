@@ -9,12 +9,10 @@ on:
       - ".github/workflows/manufacturing.yml"
       - ".github/workflows/fpga.yml"
       - ".github/workflows/hdl.yml"
-      - ".github/workflows/hdl.yml"
       - ".github/workflows/self-test.yml"
       - "test/fixture/**"
       - "test/fpga/**"
       - "test/fpga-ecp5/**"
-      - "test/hdl/**"
       - "test/hdl/**"
   pull_request:
     branches:
@@ -22,10 +20,12 @@ on:
     paths:
       - ".github/workflows/manufacturing.yml"
       - ".github/workflows/fpga.yml"
+      - ".github/workflows/hdl.yml"
       - ".github/workflows/self-test.yml"
       - "test/fixture/**"
       - "test/fpga/**"
       - "test/fpga-ecp5/**"
+      - "test/hdl/**"
 
 permissions:
   contents: write
