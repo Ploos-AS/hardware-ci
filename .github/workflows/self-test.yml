@@ -59,6 +59,7 @@ jobs:
     uses: ./.github/workflows/hdl.yml
     with:
       working_directory: test/hdl
-      test_command: "iverilog -g2005 -s simple_tb -o /tmp/simple.vvp simple.v simple_tb.v && vvp /tmp/simple.vvp"
-      verilog_files: "simple.v"
-      top: simple
+      test_command: "iverilog -g2012 -s simple_tb -o /tmp/simple.vvp simple.v simple_tb.v && vvp /tmp/simple.vvp && iverilog -g2012 -s counter_tb -o /tmp/counter.vvp counter.v counter_tb.v && vvp /tmp/counter.vvp"
+      verilog_files: "counter.v"
+      top: counter
+      conformance_command: "iverilog -g2012 -s counter_tb -o /tmp/conformance.vvp counter.v counter_tb.v && vvp /tmp/conformance.vvp"
