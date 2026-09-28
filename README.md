@@ -22,6 +22,21 @@ The reusable workflow locates a single KiCad PCB by default. Projects with multi
 
 Do not point production hardware projects at `@main`. Development happens on `main`; a tested backward-compatible release may later move the `v1` major tag forward. Immutable release tags such as `v1.0.0` may also be used when an exact CI implementation must be frozen.
 
+## HDL qualification
+
+Projects with generated or hand-written Verilog can use the board-independent reusable HDL gate:
+
+```yaml
+uses: Ploos-AS/hardware-ci/.github/workflows/hdl.yml@v1
+with:
+  working_directory: rtl
+  test_command: "make test"
+  verilog_files: "top.v alu.v"
+  top: top
+```
+
+The workflow provides Icarus Verilog for simulation, Yosys parse/synthesis checking, optional architectural conformance, and a qualification report. FPGA bitstream builds remain the responsibility of `fpga.yml`.
+
 ## Self-test
 
 `.github/workflows/self-test.yml` runs on changes to `main`, pull requests, and manual dispatch. It validates the public reusable-workflow contract and versioning documentation before a new revision should be considered for the stable major tag.
