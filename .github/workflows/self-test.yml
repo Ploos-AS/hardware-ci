@@ -8,10 +8,14 @@ on:
     paths:
       - ".github/workflows/manufacturing.yml"
       - ".github/workflows/fpga.yml"
+      - ".github/workflows/hdl.yml"
+      - ".github/workflows/hdl.yml"
       - ".github/workflows/self-test.yml"
       - "test/fixture/**"
       - "test/fpga/**"
       - "test/fpga-ecp5/**"
+      - "test/hdl/**"
+      - "test/hdl/**"
   pull_request:
     branches:
       - main
@@ -50,3 +54,11 @@ jobs:
       test_target: test
       build_target: build
       bitstream_path: test/fpga-ecp5/fixture.bit
+
+  hdl-fixture:
+    uses: ./.github/workflows/hdl.yml
+    with:
+      working_directory: test/hdl
+      test_command: "iverilog -g2005 -s simple_tb -o /tmp/simple.vvp simple.v simple_tb.v && vvp /tmp/simple.vvp"
+      verilog_files: "simple.v"
+      top: simple
